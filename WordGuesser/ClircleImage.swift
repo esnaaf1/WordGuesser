@@ -7,12 +7,20 @@
 
 import SwiftUI
 
-struct ClircleImage: View {
+struct CircleImage: View {
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        Image("Image")
+            .resizable()
+            .clipShape(Circle())
+            .frame(width: 200, height: 200)
+            .overlay {
+                Circle().stroke(.gray, lineWidth: 1)
+            }
+//            .shadow(radius: 2)
+//
     }
 }
 
 #Preview {
-    ClircleImage()
+    ContentView()
 }
