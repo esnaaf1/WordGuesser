@@ -11,6 +11,8 @@ struct ContentView: View {
     @State private var guessedLetters = Array(repeating: " ", count: 5)
     @State private var currentGuess = ""
     @State private var strikes = 0
+    @State private var wins = 0
+    @State private var losses = 0
     @State private var gameEnded = false
     @State private var playerWon = false
     @State private var isShowingTitle = false
@@ -40,41 +42,44 @@ struct ContentView: View {
             .padding(.bottom, -5)
 
         Text("Strikes: \(strikes)/3")
-            .offset(y:-70)
-            .font(.title2)
+            .offset(y:-90)
+            .font(.title3)
             .foregroundColor(.red)
-            .padding()
-        
+        Text("Wins: \(wins); Losses: \(losses)")
+            .offset(y:-90)
+            .font(.title3)
+            .foregroundColor(.black)
+
         ZStack {
             if (playerWon && strikes == 0) {
                 Text("Wow! You are an Expert!")
                     .font(.title)
-                    .offset(y:-50)
+                    .offset(y:-40)
                     .foregroundColor( isShowingWin ? .green: .blue)
                     .scaleEffect(isShowingWin ? 1.2: 1)
                     .rotationEffect(.degrees(isShowingWin ? 360: 0))
                     .animation(.easeInOut(duration: 2), value: isShowingWin)
                     .onAppear{self.isShowingWin = !isShowingWin}
             } else if (playerWon && strikes == 1) {
-                Text("Nice Work!")
+                Text("Great Job! You Win!")
                     .font(.title)
-                    .offset(y:-50)
-                    .foregroundColor(.green)
+                    .offset(y:-40)
+                    .foregroundColor(.teal)
                     .opacity(isShowingWin ? 1: 0)
                     .animation(.easeIn(duration: 2), value: isShowingWin)
                     .onAppear{self.isShowingWin = !isShowingWin}
             } else if (playerWon && strikes == 2) {
                 Text("Phew! You just made it!")
                     .font(.title)
-                    .offset(y:-50)
-                    .foregroundColor(.green)
+                    .offset(y:-40)
+                    .foregroundColor(.purple)
                     .opacity(isShowingWin ? 1: 0)
                     .animation(.easeIn(duration: 2), value: isShowingWin)
                     .onAppear{self.isShowingWin = !isShowingWin}
             } else if (strikes == 3) {
                 Text("Sorry, the word is \(word)")
                     .font(.title)
-                    .offset(y:-50)
+                    .offset(y:-40)
                     .foregroundColor(.red)
                     .scaleEffect(isShowingLose ? 1.2 : 1)
                     .animation(Animation.easeInOut(duration: 0.5).repeatForever(autoreverses: true), value: isShowingLose)
@@ -155,6 +160,7 @@ struct ContentView: View {
             strikes += 1
             if strikes == 3 {
                 gameEnded = true
+                losses += 1
             }
         } else {
             checkIfPlayerWon()
@@ -166,6 +172,7 @@ struct ContentView: View {
     func checkIfPlayerWon() {
         if guessedLetters.joined() == word {
             playerWon = true
+            wins += 1
             gameEnded = true
         }
     }
