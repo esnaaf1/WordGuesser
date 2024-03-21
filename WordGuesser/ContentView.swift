@@ -18,6 +18,8 @@ struct ContentView: View {
     @State private var isShowingTitle = false
     @State private var isShowingWin = false
     @State private var isShowingLose = false
+    @State private var getAHint = false
+    @State private var usedHint = false
 
     @FocusState private var letterInFocus: Bool
     var body: some View {
@@ -52,16 +54,29 @@ struct ContentView: View {
 
         ZStack {
             if (playerWon && strikes == 0) {
-                Text("Wow! You are an Expert!")
-                    .font(.title)
-                    .offset(y:-40)
-                    .foregroundColor( isShowingWin ? .green: .blue)
-                    .scaleEffect(isShowingWin ? 1.2: 1)
-                    .rotationEffect(.degrees(isShowingWin ? 360: 0))
-                    .animation(.easeInOut(duration: 2), value: isShowingWin)
-                    .onAppear{self.isShowingWin = !isShowingWin}
+                if (usedHint) {
+                    Text("Great! You are very good!")
+                        .font(.title)
+                        .offset(y:-40)
+                        .foregroundColor(.teal)
+                        .opacity(isShowingWin ? 1: 0)
+                        .animation(.easeIn(duration: 2), value: isShowingWin)
+                        .onAppear{self.isShowingWin = !isShowingWin}
+      
+                    
+                } else {
+                    Text("Wow!, You're an Expert!")
+                        .font(.title)
+                        .offset(y:-40)
+                        .foregroundColor( isShowingWin ? .green: .blue)
+                        .scaleEffect(isShowingWin ? 1.2: 1)
+                        .rotationEffect(.degrees(isShowingWin ? 360: 0))
+                        .animation(.easeInOut(duration: 2), value: isShowingWin)
+                        .onAppear{self.isShowingWin = !isShowingWin}
+                }
+
             } else if (playerWon && strikes == 1) {
-                Text("Great Job! You Win!")
+                Text("Nice! You are good!")
                     .font(.title)
                     .offset(y:-40)
                     .foregroundColor(.teal)
@@ -117,15 +132,29 @@ struct ContentView: View {
                   }
                 }
 
-            
-            Button (action: makeGuess) {
-             Text("Guess")
-                    .foregroundColor(gameEnded ? .secondary : .white)
-                    .padding()
-                    .background(gameEnded ? Color.secondary: Color.blue)
-                    .clipShape(Capsule())
-            }.disabled(gameEnded)
-    
+            HStack {
+                Button (action: makeGuess) {
+                 Text("Guess")
+                        .foregroundColor(gameEnded ? .secondary : .white)
+                        .padding()
+                        .background(gameEnded ? Color.secondary: Color.blue)
+                        .clipShape(Capsule())
+                }.disabled(gameEnded)
+                
+                Button(action: {
+                    showOneLetter()
+                    getAHint = true}) {
+                        Text("Reveal a letter")
+                            .foregroundColor(getAHint ?
+                                .secondary: .white)
+                            .padding()
+                            .background(getAHint ?
+                                Color.secondary: Color.blue)
+                            .clipShape(Capsule())
+                    }.disabled(getAHint)
+                
+            }
+
     
 
             Button(action: resetGame) {
@@ -174,6 +203,7 @@ struct ContentView: View {
             playerWon = true
             wins += 1
             gameEnded = true
+            getAHint = true
         }
     }
 
@@ -187,7 +217,20 @@ struct ContentView: View {
         playerWon = false
         isShowingWin = false
         isShowingLose = false
+        getAHint = false
+        usedHint = false
         
+    }
+    
+    func showOneLetter() {
+        for (index, char) in word.enumerated() {
+            if guessedLetters[index] == " " {
+                guessedLetters[index] = String(char)
+                checkIfPlayerWon()
+                usedHint = true
+                return
+            }
+        }
     }
 }
 
